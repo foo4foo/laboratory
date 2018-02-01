@@ -36,7 +36,7 @@ public class Main extends Application {
 		// Configure the session factory
 		try {
 			Configuration configuration = new Configuration();
-		    configuration.configure("/META-INF/hibernate.cfg.xml");
+		    configuration.configure("META-INF/hibernate.cfg.xml");
 		    
 		    ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(
 		            configuration.getProperties()).build();
@@ -53,8 +53,8 @@ public class Main extends Application {
             chemical3.setLatin_name("www");
             chemical3.setName("qqq");
             //chemical.setId(1L);
-            //session.save(chemical);
-            //session.save(chemical2);
+            session.save(chemical);
+            session.save(chemical2);
             session.save(chemical3);
             session.getTransaction().commit();
             session.close();
