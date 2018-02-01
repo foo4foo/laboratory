@@ -1,0 +1,79 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        // provides javafx-gradle-plugin
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+        // provides proguard.gradle.ProGuardTask (including all requirements)
+        classpath 'net.sf.proguard:proguard-gradle:5.2.1'
+    }
+}
+
+apply plugin: 'java'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies{
+    // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
+	compile group: 'org.hibernate', name: 'hibernate-core', version: '4.0.0.Final'
+	
+	// https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+	compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.21.0.1'
+	
+    // https://mvnrepository.com/artifact/org.hibernate/hibernate-validator
+	compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.0.2.Final'
+	
+	// https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
+	compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+	
+	// https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-core
+	compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.2.11'
+	
+	// https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl
+	compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.2.11'
+	
+	// https://mvnrepository.com/artifact/javax.activation/javax.activation-api
+	compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
+	
+	compile 'com.enigmabridge:hibernate4-sqlite-dialect:0.1.2'
+
+
+}
+
+apply plugin: 'javafx-gradle-plugin'
+
+jfx {
+    verbose = true
+    mainClass = 'com.zenjava.test.javafx_and_proguard.MainApp'
+    appName = 'laboratory'
+    manifestAttributes = [
+        someElement: ""
+    ]
+    jfxMainAppJarName = 'javafx-proguard-gradle-jfx.jar'
+    vendor = "foo4foo"
+    bundleArguments = [
+        runtime: null
+    ]
+    alternativePathToJarFile 'build/libs/javafx-proguard-gradle.out.jar'
+}
+
+// for more details, see: http://proguard.sourceforge.net/manual/gradle.html
+task myProguardTask(type: proguard.gradle.ProGuardTask) {
+    configuration 'proguard.conf'
+    
+    // make all runtime-dependencies available while obfruscating
+    configurations.runtime.resolve().each {
+        libraryjars file(it.getAbsolutePath())
+    }
+
+    injars 'build/libs/javafx-proguard-gradle.jar'
+    outjars 'build/libs/javafx-proguard-gradle.out.jar'
+}
+
+// set task-dependencies
+jfxJar.dependsOn myProguardTask
